@@ -1,0 +1,11 @@
+# -*- coding: utf-8 -*-
+
+*~
+*.pyc
+/.cache/
+/.coverage
+/.tox/
+/aiotk.egg-info/
+/build/
+/coverage/
+/dist/

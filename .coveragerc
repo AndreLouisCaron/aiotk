@@ -1,0 +1,12 @@
+# -*- coding: utf-8 -*-
+
+[run]
+branch = True
+source = aiotk/
+
+[paths]
+source =
+  .tox/*/lib/*/site-packages/
+
+[html]
+directory = coverage
