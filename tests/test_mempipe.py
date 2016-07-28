@@ -38,3 +38,12 @@ async def test_mempipe_async_eof(event_loop):
     writer.write_eof()
     message = await asyncio.wait_for(read, timeout=5.0)
     assert message == b'FUBAR'
+
+
+@pytest.mark.asyncio
+async def test_mempipe_close(event_loop):
+    reader, writer = mempipe(loop=event_loop)
+    writer.write(b'FUBAR')
+    writer.close()
+    message = await asyncio.wait_for(reader.read(), timeout=5.0)
+    assert message == b'FUBAR'
