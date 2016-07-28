@@ -7,7 +7,7 @@
 Contents:
 
 - :py:func:`aiotk.mempipe`
-- :py:func:`aiotk.UnixServer`
+- :py:class:`aiotk.UnixSocketServer`
 
 Details
 =======
