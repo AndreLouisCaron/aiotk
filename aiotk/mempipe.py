@@ -21,6 +21,9 @@ class _MemoryTransport(asyncio.Transport):
     def write_eof(self):
         self._reader.feed_eof()
 
+    def close(self):
+        self.write_eof()
+
 
 def mempipe(loop=None, limit=_DEFAULT_LIMIT):
     """In-memory pipe, returns a ``(reader, writer)`` pair.
