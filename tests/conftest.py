@@ -7,6 +7,8 @@ import testfixtures
 
 from contextlib import contextmanager
 
+from aiotk import monkey_patch
+
 
 @contextmanager
 def cwd(new_cwd):
@@ -35,3 +37,9 @@ def tempcwd(tempdir):
 
     with cwd(tempdir.path):
         yield
+
+
+@pytest.fixture(scope='session')
+def monkey():
+    """py.test fixture to apply monkey patches."""
+    monkey_patch()

@@ -7,6 +7,7 @@
 Contents:
 
 - :py:func:`aiotk.mempipe`
+- :py:func:`aiotk.monkey_patch`
 - :py:class:`aiotk.UnixSocketServer`
 
 Details
@@ -24,6 +25,28 @@ Details
           writer.write('Hello, world!\n'.encode('utf-8'))
           rep = await reader.readline()
           print(rep.decode('utf-8').strip())
+          writer.close()
+
+      asyncio.get_event_loop().run_until_complete(demo())
+
+   .. testoutput::
+
+      Hello, world!
+
+.. autofunction:: aiotk.monkey_patch
+
+   .. testcode::
+
+      import asyncio
+      import aiotk
+
+      aiotk.monkey_patch()
+
+      async def demo():
+          reader, writer = mempipe()
+          writer.write('Hello, world!'.encode('utf-8'))
+          rep = await reader.readuntil(b'!')
+          print(rep.decode('utf-8'))
           writer.close()
 
       asyncio.get_event_loop().run_until_complete(demo())
