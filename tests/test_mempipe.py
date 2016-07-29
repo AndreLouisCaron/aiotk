@@ -47,3 +47,27 @@ async def test_mempipe_close(event_loop):
     writer.close()
     message = await asyncio.wait_for(reader.read(), timeout=5.0)
     assert message == b'FUBAR'
+
+
+@pytest.mark.asyncio
+async def test_mempipe_eof(event_loop):
+    reader, writer = mempipe(loop=event_loop)
+    assert writer.can_write_eof()
+    writer.close()
+    message = await asyncio.wait_for(reader.read(), timeout=5.0)
+    assert message == b''
+
+
+# NOTE: not sure how to trigger this without accessing the transport directly!
+@pytest.mark.asyncio
+async def test_mempipe_closing(event_loop):
+    reader, writer = mempipe(loop=event_loop)
+    assert writer.transport.is_closing() is False
+    writer.write(b'FUBAR')
+    assert writer.transport.is_closing() is False
+    await writer.drain()
+    assert writer.transport.is_closing() is False
+    writer.close()
+    assert writer.transport.is_closing() is False
+    message = await asyncio.wait_for(reader.read(), timeout=5.0)
+    assert message == b'FUBAR'

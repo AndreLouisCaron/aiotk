@@ -7,6 +7,7 @@
 Contents:
 
 - :py:func:`aiotk.mempipe`
+- :py:func:`aiotk.mock_subprocess`
 - :py:func:`aiotk.monkey_patch`
 - :py:class:`aiotk.UnixSocketServer`
 
@@ -26,6 +27,36 @@ Details
           rep = await reader.readline()
           print(rep.decode('utf-8').strip())
           writer.close()
+
+      asyncio.get_event_loop().run_until_complete(demo())
+
+   .. testoutput::
+
+      Hello, world!
+
+.. autofunction:: aiotk.mock_subprocess
+
+   .. testcode::
+
+      import aiotk
+
+      async def echo(stdin, stdout):
+          line = await stdin.readline()
+          while line:
+              stdout.write(line)
+              line = await stdin.readline()
+
+      async def demo():
+          with aiotk.mock_subprocess(echo):
+              process = await asyncio.create_subprocess_exec(
+                  stdin=asyncio.subprocess.PIPE,
+                  stdout=asyncio.subprocess.PIPE,
+              )
+              stdout, stderr = await asyncio.wait_for(
+                  process.communicate(input=b'Hello, world!\n'), timeout=5.0
+              )
+              assert stderr is None
+              print(stdout.decode('utf-8').strip())
 
       asyncio.get_event_loop().run_until_complete(demo())
 

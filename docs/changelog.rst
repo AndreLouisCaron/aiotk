@@ -7,3 +7,4 @@
 * :feature:`-` Adds :py:func:`aiotk.mempipe`.
 * :feature:`-` Adds :py:class:`aiotk.UnixSocketServer`.
 * :feature:`-` Adds :py:func:`aiotk.monkey_patch`.
+* :feature:`-` Adds :py:func:`aiotk.mock_subprocess`.
