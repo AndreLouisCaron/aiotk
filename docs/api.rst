@@ -10,6 +10,7 @@ Contents:
 - :py:func:`aiotk.mock_subprocess`
 - :py:func:`aiotk.monkey_patch`
 - :py:class:`aiotk.UnixSocketServer`
+- :py:class:`aiotk.TCPServer`
 
 Details
 =======
@@ -104,6 +105,37 @@ Details
           path = './echo.sock'
           async with UnixSocketServer(path, echo):
               reader, writer = await asyncio.open_unix_connection(path)
+              writer.write('Hello, world!\n'.encode('utf-8'))
+              rep = await reader.readline()
+              print(rep.decode('utf-8').strip())
+              writer.close()
+
+      asyncio.get_event_loop().run_until_complete(demo())
+
+   .. testoutput::
+
+      Hello, world!
+
+.. autoclass:: aiotk.TCPServer
+
+   .. testcode::
+
+      import asyncio
+      import random
+
+      from aiotk import TCPServer
+
+      async def echo(reader, writer):
+          chunk = await reader.read(256)
+          while chunk:
+              writer.write(chunk)
+              chunk = await reader.read(256)
+
+      async def demo():
+          host = '127.0.0.1'
+          port = random.randint(49152, 65535)
+          async with TCPServer(host, port, echo):
+              reader, writer = await asyncio.open_connection(host, port)
               writer.write('Hello, world!\n'.encode('utf-8'))
               rep = await reader.readline()
               print(rep.decode('utf-8').strip())
