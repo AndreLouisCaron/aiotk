@@ -1,0 +1,2 @@
+releases==1.2.1
+Sphinx==1.4.5
