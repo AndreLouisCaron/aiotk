@@ -8,7 +8,29 @@ import os
 class UnixSocketServer(object):
     """Asynchronous context manager to accept UNIX connections.
 
+    This context manager provides the following features over direct use of
+    ``asyncio.start_unix_server()``:
+
+    - connection handlers are coroutines
+    - prevent leaking connections when the writer is not properly closed by the
+      connection handler
+    - automatically cancel all tasks that handle connections when it's time to
+      shut down
+    - wait until all connections are closed before shutting down the server
+      application (includes handling of a rare race condition)
+    - automatically unlink the UNIX socket when shutting down (assuming the
+      process does not crash)
+
+    :param path: Path to the UNIX socket on which to listen for incoming
+     connections.
+    :param callback: Coroutine function that will be used to spawn a task for
+     each established connection.  This coroutine must accept two positional
+     arguments: ``(reader, writer)`` which allow interaction with the peer.
+    :param loop: Event loop in which to run the server's asynchronous tasks.
+     When ``None``, the current default event loop will be used.
+
     .. versionadded: 0.1
+
     """
 
     def __init__(self, path, callback, loop=None):
@@ -20,7 +42,7 @@ class UnixSocketServer(object):
 
     @property
     def path(self):
-        """."""
+        """UNIX socket on which the server listens for incoming connections."""
         return self._path
 
     async def __aenter__(self):
@@ -33,6 +55,16 @@ class UnixSocketServer(object):
         await self.wait_closed()
 
     def start(self):
+        """Start accepting connections.
+
+        Only use this method if you are not using the server as an asynchronous
+        context manager.
+
+        See:
+
+        - :py:meth:`aiotk.TCPServer.wait_started`
+        - :py:meth:`aiotk.TCPServer.close`
+        """
         if self._server:
             raise Exception('Already running.')
         self._server = self._loop.create_task(asyncio.start_unix_server(
@@ -41,6 +73,13 @@ class UnixSocketServer(object):
 
     # NOTE: start is synchronous, so we can't await in there.
     async def wait_started(self):
+        """Wait until the server is ready to accept connections.
+
+        See:
+
+        - :py:meth:`aiotk.TCPServer.start`
+        - :py:meth:`aiotk.TCPServer.close`
+        """
         if not self._server:
             raise Exception('Not started.')
         if isinstance(self._server, asyncio.Future):
@@ -48,6 +87,21 @@ class UnixSocketServer(object):
 
     # NOTE: cancel pending sessions immediately.
     def close(self):
+        """Stop accepting connections.
+
+        .. note::
+
+           Since connections may still be pending in the kernel's TCP stack at
+           the time where you call this, it's possible that new connections
+           seem to get established after you signal your intent to stop
+           accepting connections.
+
+        See:
+
+        - :py:meth:`aiotk.TCPServer.wait_started`
+        - :py:meth:`aiotk.TCPServer.wait_closed`
+
+        """
         if not self._server:
             return
         if isinstance(self._server, asyncio.Future):
@@ -62,6 +116,13 @@ class UnixSocketServer(object):
     #   ```self._server.wait_closed()` completes, so we cancel again after it
     #   does.
     async def wait_closed(self, timeout=None):
+        """Wait until all connections are closed.
+
+        See:
+
+        - :py:meth:`aiotk.TCPServer.wait_started`
+        - :py:meth:`aiotk.TCPServer.wait_closed`
+        """
         if not self._server:
             return
         await self._server.wait_closed()
