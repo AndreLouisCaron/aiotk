@@ -15,7 +15,7 @@ to others.
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    changelog.rst
    api.rst

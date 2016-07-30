@@ -3,3 +3,7 @@ indices
 backport
 backports
 coroutine
+coroutines
+unlink
+subprocess
+subprocesses

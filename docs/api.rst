@@ -4,16 +4,12 @@
   API reference
 #################
 
-Contents:
 
-- :py:func:`aiotk.mempipe`
-- :py:func:`aiotk.mock_subprocess`
-- :py:func:`aiotk.monkey_patch`
-- :py:class:`aiotk.UnixSocketServer`
-- :py:class:`aiotk.TCPServer`
+General utilities
+=================
 
-Details
-=======
+Streams
+-------
 
 .. autofunction:: aiotk.mempipe
 
@@ -34,6 +30,13 @@ Details
    .. testoutput::
 
       Hello, world!
+
+
+Testing
+=======
+
+Subprocesses
+------------
 
 .. autofunction:: aiotk.mock_subprocess
 
@@ -65,6 +68,13 @@ Details
 
       Hello, world!
 
+
+Compatibility helpers
+=====================
+
+asyncio backports
+-----------------
+
 .. autofunction:: aiotk.monkey_patch
 
    .. testcode::
@@ -87,7 +97,16 @@ Details
 
       Hello, world!
 
+
+Network facilities
+==================
+
+
+UNIX socket server
+------------------
+
 .. autoclass:: aiotk.UnixSocketServer
+   :members:
 
    .. testcode::
 
@@ -116,7 +135,12 @@ Details
 
       Hello, world!
 
+
+TCP socket server
+-----------------
+
 .. autoclass:: aiotk.TCPServer
+   :members:
 
    .. testcode::
 
