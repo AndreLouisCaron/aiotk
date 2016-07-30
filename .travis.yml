@@ -8,6 +8,10 @@ addons:
     packages:
       - libenchant-dev
 
+os:
+  - linux
+  - osx
+
 language: python
 
 python:
