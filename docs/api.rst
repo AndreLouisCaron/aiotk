@@ -97,6 +97,35 @@ asyncio backports
 
       Hello, world!
 
+CTRL-C / SIGINT handler
+-----------------------
+
+.. autofunction:: aiotk.handle_ctrlc
+
+   .. testcode::
+
+      import asyncio
+      import os
+      import signal
+
+      from aiotk import handle_ctrlc
+
+      async def demo():
+          loop = asyncio.get_event_loop()
+          done = asyncio.Future()
+          with handle_ctrlc(done):
+              loop.call_soon(os.kill, os.getpid(), signal.SIGINT)
+              print('Press CTRL-C to continue...')
+              await asyncio.wait_for(done, timeout=1.0)
+          print('Done!')
+
+      asyncio.get_event_loop().run_until_complete(demo())
+
+   .. testoutput::
+
+      Press CTRL-C to continue...
+      Done!
+
 
 Network facilities
 ==================

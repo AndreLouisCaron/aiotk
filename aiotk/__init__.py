@@ -6,9 +6,11 @@ from .monkey import monkey_patch
 from .posix import UnixSocketServer
 from .tcp import TCPServer
 from .testing import mock_subprocess
+from .ctrlc import handle_ctrlc
 
 
 __all__ = [
+    'handle_ctrlc',
     'mempipe',
     'mock_subprocess',
     'monkey_patch',
