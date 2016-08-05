@@ -4,6 +4,7 @@
   Change log
 ##############
 
+* :feature:`-` Adds :py:func:`aiotk.handle_ctrlc`.
 * :feature:`-` Adds :py:class:`aiotk.TCPServer`.
 
 * :release:`0.1.0 <2016-07-28>`
