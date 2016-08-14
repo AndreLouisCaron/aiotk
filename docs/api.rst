@@ -144,14 +144,21 @@ CTRL-C / SIGINT handler
       import asyncio
       import os
       import signal
+      import sys
 
       from aiotk import handle_ctrlc
+
+      def send_ctrlc():
+          if sys.platform == 'win32':
+              raise NotImplementedError
+          else:
+              os.kill(os.getpid(), signal.SIGINT)
 
       async def demo():
           loop = asyncio.get_event_loop()
           done = asyncio.Future()
           with handle_ctrlc(done):
-              loop.call_soon(os.kill, os.getpid(), signal.SIGINT)
+              loop.call_soon(send_ctrlc)
               print('Press CTRL-C to continue...')
               await asyncio.wait_for(done, timeout=1.0)
           print('Done!')
