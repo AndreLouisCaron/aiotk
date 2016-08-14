@@ -60,7 +60,7 @@ async def test_ctrlc_install_handler_failure(event_loop):
     with mock.patch('ctypes.windll.kernel32.SetConsoleCtrlHandler') as install:
         install.side_effect = mock_SetConsoleCtrlHandler
         done = asyncio.Future()
-        with pytest.raises(WindowsError) as exc:
+        with pytest.raises(WindowsError):
             with handle_ctrlc(done, loop=event_loop):
                 pytest.fail('Handler install should not succeed.')
         assert install.call_count == 1
@@ -79,7 +79,7 @@ async def test_ctrlc_remove_handler_failure(event_loop):
     with mock.patch('ctypes.windll.kernel32.SetConsoleCtrlHandler') as install:
         install.side_effect = mock_SetConsoleCtrlHandler
         done = asyncio.Future()
-        with pytest.raises(WindowsError) as exc:
+        with pytest.raises(WindowsError):
             with handle_ctrlc(done, loop=event_loop):
                 pass
             pytest.fail('Handler removal should not succeed.')
