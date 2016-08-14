@@ -7,6 +7,8 @@ import pytest
 from aiotk.posix import UnixSocketServer
 
 
+@pytest.mark.posix
+@pytest.mark.darwin
 @pytest.mark.asyncio
 async def test_unix_server(event_loop, tempcwd):
     """Basic connectivity check."""
@@ -36,6 +38,8 @@ async def test_unix_server(event_loop, tempcwd):
             writer.close()
 
 
+@pytest.mark.posix
+@pytest.mark.darwin
 @pytest.mark.asyncio
 async def test_unix_server_start_while_starting(event_loop, tempcwd):
     """Cannot call start while server is starting."""
@@ -55,6 +59,8 @@ async def test_unix_server_start_while_starting(event_loop, tempcwd):
         await server.wait_closed()
 
 
+@pytest.mark.posix
+@pytest.mark.darwin
 @pytest.mark.asyncio
 async def test_unix_server_start_while_running(event_loop, tempcwd):
     """Cannot call start while server is running."""
@@ -74,6 +80,8 @@ async def test_unix_server_start_while_running(event_loop, tempcwd):
         await server.wait_closed()
 
 
+@pytest.mark.posix
+@pytest.mark.darwin
 @pytest.mark.asyncio
 async def test_unix_server_wait_started_while_stopped(event_loop, tempcwd):
     """Cannot call wait_started while server is stopped."""
@@ -87,6 +95,8 @@ async def test_unix_server_wait_started_while_stopped(event_loop, tempcwd):
         await server.wait_started()
 
 
+@pytest.mark.posix
+@pytest.mark.darwin
 @pytest.mark.asyncio
 async def test_unix_server_wait_started_idempotent(event_loop, tempcwd):
     """Can call wait_started as much as you want."""
@@ -107,6 +117,8 @@ async def test_unix_server_wait_started_idempotent(event_loop, tempcwd):
         await server.wait_closed()
 
 
+@pytest.mark.posix
+@pytest.mark.darwin
 @pytest.mark.asyncio
 async def test_unix_server_wait_closed_idempotent(event_loop, tempcwd):
     """Can call wait_closed as much as you want."""
@@ -132,6 +144,8 @@ async def test_unix_server_wait_closed_idempotent(event_loop, tempcwd):
     await server.wait_closed()
 
 
+@pytest.mark.posix
+@pytest.mark.darwin
 @pytest.mark.asyncio
 async def test_unix_server_close_idempotent(event_loop, tempcwd):
     """Can call wait_closed as much as you want."""
@@ -161,6 +175,8 @@ async def test_unix_server_close_idempotent(event_loop, tempcwd):
     server.close()
 
 
+@pytest.mark.posix
+@pytest.mark.darwin
 @pytest.mark.asyncio
 async def test_unix_server_close_while_starting(event_loop, tempcwd):
     """Cannot call close while starting."""
@@ -181,6 +197,8 @@ async def test_unix_server_close_while_starting(event_loop, tempcwd):
         await server.wait_closed()
 
 
+@pytest.mark.posix
+@pytest.mark.darwin
 @pytest.mark.asyncio
 async def test_unix_server_wait_closed_timeout(event_loop, tempcwd):
     """Not finished closing until all sessions complete."""
@@ -226,6 +244,8 @@ async def test_unix_server_wait_closed_timeout(event_loop, tempcwd):
         await server.wait_closed()
 
 
+@pytest.mark.posix
+@pytest.mark.darwin
 @pytest.mark.asyncio
 async def test_unix_server_auto_close_connection(event_loop, tempcwd):
     """Connections are closed automatically when sessions finish."""

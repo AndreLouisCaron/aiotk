@@ -3,11 +3,21 @@
 
 import os
 import pytest
+import sys
 import testfixtures
 
 from contextlib import contextmanager
 
 from aiotk import monkey_patch
+
+
+# From pytest example "marking platform specific tests with pytest".
+def pytest_runtest_setup(item):
+    if isinstance(item, item.Function):
+        plat = sys.platform
+        if not item.get_marker(plat):
+            if set(item.keywords) & {'darwin', 'linux2', 'win32'}:
+                pytest.skip("cannot run on platform %s" % (plat))
 
 
 @contextmanager
