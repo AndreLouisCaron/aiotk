@@ -4,6 +4,7 @@
   Change log
 ##############
 
+* :feature:`-` Adds support for Windows.
 * :feature:`-` Adds :py:func:`aiotk.handle_ctrlc`.
 * :feature:`-` Adds :py:class:`aiotk.TCPServer`.
 
