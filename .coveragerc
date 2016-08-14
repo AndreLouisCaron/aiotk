@@ -7,6 +7,12 @@ source = aiotk/
 [paths]
 source =
   .tox/*/lib/*/site-packages/
+  .tox/*/Lib/site-packages/
 
 [html]
 directory = coverage
+
+[report]
+exclude_lines =
+  pragma: no ${COVERAGE_PLATFORM}
+  pragma: no cover
