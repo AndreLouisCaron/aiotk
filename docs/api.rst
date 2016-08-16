@@ -8,6 +8,43 @@
 General utilities
 =================
 
+Context managers
+----------------
+
+.. autoclass:: aiotk.AsyncExitStack
+   :members:
+
+   .. testcode::
+
+      import asyncio
+      from aiotk import AsyncExitStack
+
+      class Greeter(object):
+
+          def __init__(self, name):
+              self._name = name
+
+          async def __aenter__(self):
+              print('Hello, %s!' % self._name)
+
+          async def __aexit__(self, *args):
+              print('Bye, %s!' % self._name)
+
+      async def demo():
+          async with AsyncExitStack() as stack:
+              await stack.enter_context(Greeter('Alice'))
+              await stack.enter_context(Greeter('Bob'))
+
+      asyncio.get_event_loop().run_until_complete(demo())
+
+   .. testoutput::
+
+      Hello, Alice!
+      Hello, Bob!
+      Bye, Bob!
+      Bye, Alice!
+
+
 Streams
 -------
 
