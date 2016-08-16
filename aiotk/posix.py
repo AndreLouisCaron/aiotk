@@ -5,7 +5,7 @@ import asyncio
 import os
 
 
-class UnixSocketServer(object):
+class UnixSocketServer(object):  # pragma: no win32
     """Asynchronous context manager to accept UNIX connections.
 
     This context manager provides the following features over direct use of
