@@ -11,6 +11,8 @@ General utilities
 Graceful shutdown
 -----------------
 
+.. autofunction:: aiotk.run_until_complete
+
 .. autofunction:: aiotk.cancel
 
 .. autofunction:: aiotk.cancel_all
