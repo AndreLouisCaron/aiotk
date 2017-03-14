@@ -12,6 +12,44 @@ from .testing import mock_subprocess
 from .ctrlc import handle_ctrlc
 
 
+async def wait_until_cancelled(*, propagate=True, loop=None):
+    """Wait until the calling task is canceled.
+
+    **Note**: this function is a coroutine.
+
+    When using a context manager to complete one or more background tasks, it's
+    common to have the "main" task block until something cancels it (e.g. a
+    SIGINT/CTRL-C handler).
+
+    It's also convenient in tests that verify the behavior of cancellation to
+    need to spawn a background task that waits forever.
+
+    This leads to the not-so-idiomatic:
+
+    .. code-block:: python
+
+       await asyncio.Future()
+
+    This of often wrapped in a helper function to make the call more readable.
+    Instead of propagating multiple variants of this, it should be placed in a
+    library that everybody can import.
+
+    :param loop: Loop in which the coroutine will block.  Defaults to the
+     current event loop.
+
+    """
+
+    loop = loop or asyncio.get_event_loop()
+
+    if propagate:
+        await asyncio.Future(loop=loop)
+    else:
+        try:
+            await asyncio.Future(loop=loop)
+        except asyncio.CancelledError:
+            pass
+
+
 async def cancel(task, loop=None):
     """Cancel a task and wait until it's done.
 
@@ -172,4 +210,5 @@ __all__ = [
     'monkey_patch',
     'TCPServer',
     'UnixSocketServer',
+    'wait_until_cancelled',
 ]

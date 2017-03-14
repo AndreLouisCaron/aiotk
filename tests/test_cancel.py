@@ -4,7 +4,7 @@
 import asyncio
 import pytest
 
-from aiotk import cancel, cancel_all, follow_through
+from aiotk import cancel, cancel_all, follow_through, wait_until_cancelled
 from unittest import mock
 
 
@@ -185,3 +185,44 @@ async def test_cancel_all_despite_cancel(event_loop):
     assert wait.call_count == 2
     for task in tasks:
         task.cancel.assert_called_once_with()
+
+
+@pytest.mark.asyncio
+async def test_wait_until_cancelled_propagate(event_loop):
+    """CancelledError exception is propagated by default."""
+
+    child_ready = asyncio.Event(loop=event_loop)
+
+    async def child_task():
+        child_ready.set()
+        await wait_until_cancelled(loop=event_loop)
+
+    task = event_loop.create_task(child_task())
+    await child_ready.wait()
+
+    assert not task.done()
+    await cancel(task)
+    assert task.done()
+    assert task.cancelled()
+    with pytest.raises(asyncio.CancelledError):
+        print(task.result())
+
+
+@pytest.mark.asyncio
+async def test_wait_until_cancelled_silence(event_loop):
+    """CancelledError exception can be silenced."""
+
+    child_ready = asyncio.Event(loop=event_loop)
+
+    async def child_task():
+        child_ready.set()
+        await wait_until_cancelled(propagate=False, loop=event_loop)
+
+    task = event_loop.create_task(child_task())
+    await child_ready.wait()
+
+    assert not task.done()
+    await cancel(task)
+    assert task.done()
+    assert not task.cancelled()
+    assert task.result() is None
