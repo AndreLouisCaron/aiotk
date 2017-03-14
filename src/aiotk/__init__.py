@@ -191,6 +191,37 @@ async def follow_through(task, loop=None):
     return task.result()
 
 
+def run_until_complete(coro, loop=None):
+    """Run a task through to completion.
+
+    The ``.run_until_complete()`` method on asyncio event loop objects doesn't
+    finish tasks when it receives a SIGINT/CTRL-C.  The method simply raises a
+    ``KeyboardInterrupt`` exception and this usually results in warnings about
+    unfinished tasks plus some "event loop closed" ``RuntimeError`` exceptions
+    in pending tasks.
+
+    This is a really annoying default behavior and this function aims at
+    replacing that behavior with something that ensures the task actually runs
+    through to completion.  When the ``KeyboardInterrupt`` exception is caught,
+    the task is canceled and resumed to give it a chance to clean up properly.
+
+    .. versionadded: 0.4
+
+    """
+
+    loop = loop or asyncio.get_event_loop()
+    task = loop.create_task(coro)
+    try:
+        loop.run_until_complete(task)
+    except KeyboardInterrupt:
+        task.cancel()
+        try:
+            loop.run_until_complete(task)
+        except asyncio.CancelledError:
+            return None
+    return task.result()
+
+
 from .mempipe import mempipe
 from .monkey import monkey_patch
 from .posix import UnixSocketServer
@@ -211,6 +242,7 @@ __all__ = [
     'mock_subprocess',
     'monkey_patch',
     'PoolClosed',
+    'run_until_complete',
     'TaskPool',
     'TCPServer',
     'tcp_server',
