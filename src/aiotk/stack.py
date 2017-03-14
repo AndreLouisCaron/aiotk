@@ -1,7 +1,48 @@
 # -*- coding: utf-8 -*-
 
 
+import asyncio
 import sys
+
+from aiotk import cancel, follow_through
+
+
+class EnsureDone:
+    """Ensure a background task completes before leaving a code block.
+
+    This is mostly useful for spawning multiple tasks in the background using
+    :py:class:`~AsyncExitStack`, but it can also be used directly for single
+    tasks.
+
+    .. source-code: python
+
+    .. versionadded: 0.3
+
+    """
+
+    def __init__(self, coro, cancel=True, loop=None):
+        self._loop = loop or asyncio.get_event_loop()
+        self._coro = coro
+        self._task = None
+        self._cancel = cancel
+
+    async def __aenter__(self):
+        """Spawn the background task."""
+
+        self._task = self._loop.create_task(self._coro)
+        return self._task
+
+    async def __aexit__(self, *args):
+        """Wait until the task completes.
+
+        If ``cancel=True`` was passed to the constructor, the task is cancelled
+        before being awaited.
+
+        """
+        if self._cancel:
+            await cancel(self._task, loop=self._loop)
+        else:
+            await follow_through(self._task, loop=self._loop)
 
 
 class AsyncExitStack(object):

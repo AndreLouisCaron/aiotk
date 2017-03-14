@@ -194,7 +194,7 @@ async def follow_through(task, loop=None):
 from .mempipe import mempipe
 from .monkey import monkey_patch
 from .posix import UnixSocketServer
-from .stack import AsyncExitStack
+from .stack import AsyncExitStack, EnsureDone
 from .tcp import TCPServer, tcp_server
 from .testing import mock_subprocess
 from .ctrlc import handle_ctrlc
