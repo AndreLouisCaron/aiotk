@@ -5,7 +5,7 @@
 /.cache/
 /.coverage
 /.tox/
-/aiotk.egg-info/
+/src/aiotk.egg-info/
 /build/
 /coverage/
 /dist/
