@@ -52,6 +52,24 @@ Graceful shutdown
       Bye, Bob!
       Bye, Alice!
 
+.. autoclass:: aiotk.EnsureDone
+   :members:
+
+   .. testcode::
+
+      from aiotk import EnsureDone, wait_until_cancelled
+
+      async def background_task():
+          await wait_until_cancelled(loop=event_loop)
+
+      async def demo():
+          async with EnsureDone(background_task()) as task:
+              assert not task.done()
+
+          assert task.done()
+
+      asyncio.get_event_loop().run_until_complete(demo())
+
 
 Streams
 -------
