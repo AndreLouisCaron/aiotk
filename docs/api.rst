@@ -70,6 +70,28 @@ Graceful shutdown
 
       asyncio.get_event_loop().run_until_complete(demo())
 
+.. autoclass:: aiotk.TaskPool
+   :members:
+
+   .. testcode::
+
+      import asyncio
+      from aiotk import TaskPool, wait_until_cancelled
+
+      async def background_task(ready):
+          ready.set()
+          await wait_until_cancelled()
+
+      async def demo():
+          ready = asyncio.Event()
+          async with TaskPool() as pool:
+              task = await pool.spawn(background_task, ready)
+              await ready.wait()
+              assert not task.done()
+
+          assert task.done()
+
+      asyncio.get_event_loop().run_until_complete(demo())
 
 Streams
 -------

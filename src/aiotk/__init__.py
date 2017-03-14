@@ -198,6 +198,7 @@ from .stack import AsyncExitStack, EnsureDone
 from .tcp import TCPServer, tcp_server
 from .testing import mock_subprocess
 from .ctrlc import handle_ctrlc
+from ._pool import PoolClosed, TaskPool
 
 
 __all__ = [
@@ -209,6 +210,8 @@ __all__ = [
     'mempipe',
     'mock_subprocess',
     'monkey_patch',
+    'PoolClosed',
+    'TaskPool',
     'TCPServer',
     'tcp_server',
     'UnixSocketServer',
