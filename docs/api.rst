@@ -8,8 +8,10 @@
 General utilities
 =================
 
-Context managers
-----------------
+Graceful shutdown
+-----------------
+
+.. autofunction:: aiotk.cancel
 
 .. autoclass:: aiotk.AsyncExitStack
    :members:
