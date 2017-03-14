@@ -213,6 +213,8 @@ UNIX socket server
 TCP socket server
 -----------------
 
+.. autofunction:: aiotk.tcp_server
+
 .. autoclass:: aiotk.TCPServer
    :members:
 

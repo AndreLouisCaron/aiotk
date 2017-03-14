@@ -4,7 +4,61 @@
 import asyncio
 import pytest
 
-from aiotk.tcp import TCPServer
+from aiotk import (
+    TCPServer,
+    tcp_server,
+)
+
+
+class Echo(asyncio.Protocol):
+    """Demo from the asyncio documentation."""
+
+    def __init__(self):
+        self._transport = None
+
+    def connection_made(self, transport):
+        self._transport = transport
+
+    def data_received(self, data):
+        self._transport.write(data)
+        self._transport.close()
+
+    def connection_lost(self, exc):
+        pass
+
+
+@pytest.mark.asyncio
+async def test_tcp_server_fn(event_loop, unused_tcp_port):
+    """Basic connectivity check."""
+
+    host = '127.0.0.1'
+    port = unused_tcp_port
+
+    # Start the TCP server.
+    task = event_loop.create_task(tcp_server(
+        protocol_factory=Echo,
+        host=host, port=port, loop=event_loop,
+    ))
+
+    try:
+        # Wait until the server is responsive.
+        await asyncio.sleep(0.1, loop=event_loop)
+
+        # Check connectivity.
+        reader, writer = await asyncio.open_connection(
+            host=host,
+            port=port,
+            loop=event_loop,
+        )
+        try:
+            message = b'Hello!'
+            writer.write(message)
+            assert (await reader.readline()) == message
+        finally:
+            writer.close()
+    except asyncio.CancelledError:
+        task.cancel()
+        await asyncio.wait({task}, loop=event_loop)
 
 
 @pytest.mark.asyncio

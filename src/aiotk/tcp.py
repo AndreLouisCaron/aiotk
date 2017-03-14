@@ -4,6 +4,37 @@
 import asyncio
 
 
+async def tcp_server(**kwds):
+    """Run a TCP server in the foreground.
+
+    **Note**: this function is a coroutine.
+
+    This context manager provides the following features over direct use of
+    ``asyncio.create_server()``:
+
+    - runs in the foreground, blocking the calling task
+    - automatically closes the server object with graceful shutdown.
+
+    There are two main difference with the related :py:class:`~TCPServer`:
+
+    - based on ``asyncio.create_server()`` for compatibility with libraries
+      that are based on protocols (asyncio's callback API)
+    - runs in the foreground
+
+    .. versionadded: 0.3
+
+    """
+
+    loop = kwds.pop('loop', None) or asyncio.get_event_loop()
+
+    server = await loop.create_server(**kwds)
+    try:
+        await asyncio.Future(loop=loop)
+    finally:
+        server.close()
+        await server.wait_closed()
+
+
 class TCPServer(object):
     """Asynchronous context manager to accept TCP connections.
 
