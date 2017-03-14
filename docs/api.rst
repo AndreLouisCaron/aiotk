@@ -15,6 +15,8 @@ Graceful shutdown
 
 .. autofunction:: aiotk.cancel_all
 
+.. autofunction:: aiotk.follow_through
+
 .. autoclass:: aiotk.AsyncExitStack
    :members:
 

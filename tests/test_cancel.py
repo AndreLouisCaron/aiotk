@@ -4,8 +4,68 @@
 import asyncio
 import pytest
 
-from aiotk import cancel, cancel_all
+from aiotk import cancel, cancel_all, follow_through
 from unittest import mock
+
+
+@pytest.mark.asyncio
+async def test_follow_through_success(event_loop):
+    """Child task's return value is returned."""
+
+    async def child_task(result):
+        return result
+
+    # Spawn a task that will never complete (unless cancelled).
+    task = event_loop.create_task(child_task(123))
+
+    assert not task.done()
+    assert (await follow_through(task)) == 123
+    assert task.done()
+    assert not task.cancelled()
+
+
+@pytest.mark.asyncio
+async def test_follow_through_failure(event_loop):
+    """Child task's exception is propagated."""
+
+    async def child_task(error):
+        raise error
+
+    # Spawn a task that will never complete (unless cancelled).
+    error = Exception()
+    task = event_loop.create_task(child_task(error))
+
+    assert not task.done()
+    with pytest.raises(Exception) as exc:
+        print(await follow_through(task))
+    assert exc.value is error
+    assert task.done()
+    assert not task.cancelled()
+
+
+@pytest.mark.asyncio
+async def test_follow_through_forward_cancel(event_loop):
+    """Cancellation is propagated to the child task."""
+
+    task = mock.MagicMock()
+    task.cancel.side_effect = [True]
+
+    with mock.patch('asyncio.wait') as wait:
+        error = asyncio.CancelledError()
+        success = asyncio.Future(loop=event_loop)
+        success.set_result(None)
+        wait.side_effect = [
+            error,
+            success,
+        ]
+        with pytest.raises(asyncio.CancelledError) as exc:
+            await follow_through(task)
+        assert exc.value is error
+
+    wait.assert_called_with({task}, loop=event_loop)
+    assert wait.call_count == 2
+    task.result.assert_not_called
+    task.cancel.assert_called_once_with()
 
 
 @pytest.mark.asyncio
@@ -49,8 +109,9 @@ async def test_cancel_despite_cancel(event_loop):
             await cancel(task)
         assert exc.value is error
 
-    wait.assert_called_with({task})
+    wait.assert_called_with({task}, loop=event_loop)
     assert wait.call_count == 2
+    task.cancel.assert_called_once_with()
 
 
 @pytest.mark.asyncio
@@ -118,7 +179,9 @@ async def test_cancel_all_despite_cancel(event_loop):
         assert exc.value is error
 
     assert wait.call_args_list == [
-        mock.call(tasks),
-        mock.call(tasks),
+        mock.call(tasks, loop=event_loop),
+        mock.call(tasks, loop=event_loop),
     ]
     assert wait.call_count == 2
+    for task in tasks:
+        task.cancel.assert_called_once_with()
