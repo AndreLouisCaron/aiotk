@@ -56,7 +56,7 @@ async def test_tcp_server_fn(event_loop, unused_tcp_port):
             assert (await reader.readline()) == message
         finally:
             writer.close()
-    except asyncio.CancelledError:
+    finally:
         task.cancel()
         await asyncio.wait({task}, loop=event_loop)
 
