@@ -2,11 +2,12 @@
 
 [run]
 branch = True
-source = aiotk/
+source = aiotk
 
 [paths]
 source =
-  .tox/*/lib/*/site-packages/
+  .tox/*/lib/site-packages/aiotk/
+  .tox/*/lib/*/site-packages/aiotk/
 
 [html]
 directory = coverage
