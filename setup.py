@@ -9,7 +9,7 @@ def readfile(path):
         return stream.read().decode('utf-8')
 
 
-version = readfile('aiotk/version.txt').strip()
+version = readfile('src/aiotk/version.txt').strip()
 readme = readfile('README.rst')
 
 
@@ -19,6 +19,14 @@ setup(
     maintainer_email='andre.l.caron@gmail.com',
     version=version,
     url='https://github.com/AndreLouisCaron/aiotk',
-    packages=find_packages(),
+    packages=find_packages(where='src'),
+    package_dir={
+        '': 'src',
+    },
+    package_data={
+        'aiotk': [
+            'version.txt',
+        ],
+    },
     long_description=readme,
 )
