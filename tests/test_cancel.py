@@ -4,7 +4,7 @@
 import asyncio
 import pytest
 
-from aiotk import cancel
+from aiotk import cancel, cancel_all
 from unittest import mock
 
 
@@ -68,3 +68,57 @@ async def test_cancel_already_done(event_loop):
     assert task.done()
 
     await cancel(task)
+
+
+@pytest.mark.asyncio
+async def test_cancel_all_success(event_loop):
+    """Child task's CancelledError exceptions are not propagated."""
+
+    async def child_task(future):
+        await future
+
+    # Spawn a task that will never complete (unless cancelled).
+    future = asyncio.Future(loop=event_loop)
+    children = {
+        event_loop.create_task(child_task(future)) for i in range(5)
+    }
+
+    # Cancel the task.
+    assert not any(task.done() for task in children)
+    await cancel_all(children)
+    assert all(task.done() for task in children)
+    assert all(task.cancelled() for task in children)
+
+    # Ensure that it was cancelled.
+    for task in children:
+        with pytest.raises(asyncio.CancelledError):
+            print(await task)
+
+
+@pytest.mark.asyncio
+async def test_cancel_all_despite_cancel(event_loop):
+    """CancelledError exception is not propagated until all tasks complete."""
+
+    tasks = set()
+    for _ in range(5):
+        task = mock.MagicMock()
+        task.cancel.side_effect = [True]
+        tasks.add(task)
+
+    with mock.patch('asyncio.wait') as wait:
+        error = asyncio.CancelledError()
+        success = asyncio.Future(loop=event_loop)
+        success.set_result(None)
+        wait.side_effect = [
+            error,
+            success,
+        ]
+        with pytest.raises(asyncio.CancelledError) as exc:
+            await cancel_all(tasks)
+        assert exc.value is error
+
+    assert wait.call_args_list == [
+        mock.call(tasks),
+        mock.call(tasks),
+    ]
+    assert wait.call_count == 2
