@@ -3,6 +3,8 @@
 
 import asyncio
 
+from contextlib import contextmanager
+
 
 async def wait_until_cancelled(*, propagate=True, loop=None):
     """Wait until the calling task is canceled.
@@ -222,11 +224,44 @@ def run_until_complete(coro, loop=None):
     return task.result()
 
 
+
+@contextmanager
+def reader(fd, callback, loop=None):
+    """Register a low-level reader for a file descriptor.
+
+    **Note**: the proactor event loop does not support readers.
+
+    It's an easy mistake to forget a call to ``.remove_reader()`` and end up
+    receiving extra I/O you were not interested in.  This context manager makes
+    sure you never forget.
+
+    :param fd: File descriptor to watch for read events.
+    :param callback: Called when the file descriptor is ready to read from.
+     See asyncio's documentation on ``loop.add_reader()`` for details.
+    :param loop: Loop in which the watch will be registered.  Defaults to the
+     current event loop.
+
+    This context manager yields nothing.
+
+    .. versionadded: 0.4
+
+    """
+
+    loop = loop or asyncio.get_event_loop()
+
+    loop.add_reader(fd, callback)
+    try:
+        yield
+    finally:
+        loop.remove_reader(fd)
+
+
 from .mempipe import mempipe
 from .monkey import monkey_patch
 from .posix import UnixSocketServer
 from .stack import AsyncExitStack, EnsureDone
 from .tcp import TCPServer, tcp_server
+from ._udp import udp_server
 from .testing import mock_subprocess
 from .ctrlc import handle_ctrlc
 from ._pool import PoolClosed, TaskPool
@@ -242,10 +277,12 @@ __all__ = [
     'mock_subprocess',
     'monkey_patch',
     'PoolClosed',
+    'reader',
     'run_until_complete',
     'TaskPool',
     'TCPServer',
     'tcp_server',
+    'udp_server',
     'UnixSocketServer',
     'wait_until_cancelled',
 ]

@@ -95,8 +95,70 @@ Graceful shutdown
 
       asyncio.get_event_loop().run_until_complete(demo())
 
+.. autofunction:: aiotk.reader
+
 Streams
 -------
+
+.. autofunction:: aiotk.udp_server
+
+   .. testcode::
+
+      import asyncio
+      from aiotk import (
+          cancel,
+          udp_server,
+          EnsureDone,
+          AsyncExitStack,
+      )
+
+      host = '127.0.0.1'
+      server_port = 5555
+      client_port = 5556
+
+      async def echo_server(iqueue, oqueue, loop):
+          """UDP echo server."""
+
+          try:
+              while True:
+                  peer, data = await iqueue.get()
+                  assert peer == (host, client_port)
+                  await oqueue.put((peer, data))
+          except asyncio.CancelledError:
+              pass
+
+      async def echo_client(iqueue, oqueue, loop):
+          """UDP echo client."""
+
+          # Repeatedly send until the server ACKs.
+          item = None
+          while item is None:
+              try:
+                  item = iqueue.get_nowait()
+              except asyncio.QueueEmpty:
+                  await asyncio.sleep(0.5)
+                  await oqueue.put(((host, server_port), b'PING'))
+
+          peer, data = item
+          assert peer == (host, server_port)
+          assert data == b'PING'
+
+      async def demo():
+          async with AsyncExitStack() as stack:
+              server = await stack.enter_context(EnsureDone(
+                  udp_server(host, client_port, echo_server),
+              ))
+              client = await stack.enter_context(EnsureDone(
+                  udp_server(host, server_port, echo_client),
+              ))
+              await asyncio.wait_for(client, timeout=5.0)
+              await cancel(server)
+
+          assert client.result() is None
+          assert server.result() is None
+
+      asyncio.get_event_loop().run_until_complete(demo())
+
 
 .. autofunction:: aiotk.mempipe
 
