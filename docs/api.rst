@@ -181,6 +181,35 @@ Streams
       Hello, world!
 
 
+Scheduling
+==========
+
+.. autoclass:: aiotk.PeriodicTask
+
+   .. testcode::
+
+      import aiotk
+      import asyncio
+
+      async def demo():
+          """Run a task every 10 millisconds."""
+
+          sem = asyncio.Semaphore()
+
+          async def task():
+              sem.release()
+
+          # Run the background task every 10ms.
+          async with aiotk.PeriodicTask(task, 0.01):
+              await sem.acquire()
+              await sem.acquire()
+              await sem.acquire()
+
+          # Task no longer runs here.
+
+      aiotk.run_until_complete(demo())
+
+
 Testing
 =======
 

@@ -265,6 +265,7 @@ from ._udp import udp_server
 from .testing import mock_subprocess
 from .ctrlc import handle_ctrlc
 from ._pool import PoolClosed, TaskPool
+from ._sched import PeriodicTask
 
 
 __all__ = [
@@ -276,6 +277,7 @@ __all__ = [
     'mempipe',
     'mock_subprocess',
     'monkey_patch',
+    'PeriodicTask',
     'PoolClosed',
     'reader',
     'run_until_complete',
