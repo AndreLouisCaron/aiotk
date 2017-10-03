@@ -62,11 +62,10 @@ async def test_tcp_server_fn(event_loop, unused_tcp_port):
 
 
 @pytest.mark.asyncio
-async def test_tcp_server(event_loop, unused_tcp_port):
+async def test_tcp_server(event_loop):
     """Basic connectivity check."""
 
     host = '127.0.0.1'
-    port = unused_tcp_port
 
     async def echo(reader, writer):
         try:
@@ -77,12 +76,12 @@ async def test_tcp_server(event_loop, unused_tcp_port):
         finally:
             writer.close()
 
-    async with TCPServer(host, port, echo, event_loop) as server:
+    async with TCPServer(host, 0, echo, event_loop) as server:
         assert server.host == host
-        assert server.port == port
+        assert server.port > 0
         reader, writer = await asyncio.open_connection(
             host=host,
-            port=port,
+            port=server.port,
             loop=event_loop,
         )
         try:

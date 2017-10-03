@@ -50,7 +50,11 @@ class TCPServer(object):
       application (includes handling of a rare race condition)
 
     :param host: Network interface on which to listen for incoming connections.
-    :param port: Port number on which to listen for incoming connections.
+
+    :param port: Port number on which to listen for incoming connections.  You
+     can pass a value of zero to ask the system to pick an available port for
+     you.  After ``wait_started()``, the ``port`` property will contain the
+     port number on which the server is listening.
     :param callback: Coroutine function that will be used to spawn a task for
      each established connection.  This coroutine must accept two positional
      arguments: ``(reader, writer)`` which allow interaction with the peer.
@@ -86,6 +90,12 @@ class TCPServer(object):
         See:
 
         - :py:data:`aiotk.TCPServer.host`
+
+        .. versionchanged:: 0.4.1
+
+           When asking the system to choose the available port, this property
+           now returns the actual port number (rather than zero).
+
         """
         return self._port
 
@@ -128,6 +138,7 @@ class TCPServer(object):
             raise Exception('Not started.')
         if isinstance(self._server, asyncio.Future):
             self._server = await self._server
+            self._port = self._server.sockets[0].getsockname()[1]
 
     # NOTE: cancel pending sessions immediately.
     #
