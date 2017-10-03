@@ -9,6 +9,7 @@ import signal
 from aiotk import handle_ctrlc
 
 
+@pytest.mark.skipif('sys.platform == "win32"')
 @pytest.mark.asyncio
 async def test_ctrlc(event_loop):
     done = asyncio.Future()
@@ -18,6 +19,7 @@ async def test_ctrlc(event_loop):
     assert done.result() is None
 
 
+@pytest.mark.skipif('sys.platform == "win32"')
 @pytest.mark.asyncio
 async def test_ctrlc_idempotent(event_loop):
     done = asyncio.Future()
