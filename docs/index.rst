@@ -8,8 +8,8 @@ Purpose
 =======
 
 This is a collection of asyncio-related utilities that I have found useful,
-that I've used in at least two projects and that seem like they might be useful
-to others.
+that I have used in at least two projects and that seem like they might be
+useful to others.
 
 
 Contents:
