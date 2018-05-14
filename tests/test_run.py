@@ -8,13 +8,24 @@ from aiotk import run_until_complete
 from unittest import mock
 
 
-def test_run_until_complete_success(event_loop):
+def test_run_until_complete_success_coro(event_loop):
     """The return value is forwarded."""
 
     async def main():
         return 123
 
     result = run_until_complete(main(), loop=event_loop)
+    assert result == 123
+
+
+def test_run_until_complete_success_task(event_loop):
+    """The return value is forwarded."""
+
+    async def main():
+        return 123
+
+    task = event_loop.create_task(main())
+    result = run_until_complete(task, loop=event_loop)
     assert result == 123
 
 
