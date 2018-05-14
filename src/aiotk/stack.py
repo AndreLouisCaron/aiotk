@@ -90,7 +90,7 @@ class AsyncExitStack(object):
                 if suppress:
                     etype, exc, tb = (None, None, None)
                     changed = True
-            except:
+            except Exception:
                 etype, exc, tb = sys.exc_info()
                 changed = True
         if changed:
