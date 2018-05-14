@@ -25,7 +25,7 @@ from ._sched import PeriodicTask
 def run_until_complete(coro, loop=None):
     """Run a task through to completion.
 
-    The ``.run_until_complete()`` method on asyncio event loop objects doesn't
+    The ``.run_until_complete()`` method on asyncio event loop objects does not
     finish tasks when it receives a SIGINT/CTRL-C.  The method simply raises a
     ``KeyboardInterrupt`` exception and this usually results in warnings about
     unfinished tasks plus some "event loop closed" ``RuntimeError`` exceptions
