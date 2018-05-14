@@ -8,7 +8,7 @@ import pytest
 import signal
 
 from aiotk import mock_subprocess
-from aiotk.testing import Process, OutputStreamAdapter
+from aiotk._testing import Process, OutputStreamAdapter
 from unittest import mock
 
 

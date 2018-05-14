@@ -27,7 +27,7 @@ from typing import (
     Union,
 )
 
-from .mempipe import mempipe
+from ._mempipe import mempipe
 
 
 def call_with_minimal_args(f: Callable, **kwds):

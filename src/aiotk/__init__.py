@@ -12,17 +12,17 @@ from ._cancel import (
     follow_through,
     wait_until_cancelled,
 )
-from .mempipe import mempipe
-from .monkey import monkey_patch
+from ._ctrlc import handle_ctrlc
 from ._io import reader
-from .posix import UnixSocketServer
-from .stack import AsyncExitStack, EnsureDone
-from .tcp import TCPServer, tcp_server
-from ._udp import udp_server
-from .testing import mock_subprocess
-from .ctrlc import handle_ctrlc
+from ._mempipe import mempipe
+from ._monkey import monkey_patch
 from ._pool import PoolClosed, TaskPool
+from ._posix import UnixSocketServer
 from ._sched import PeriodicTask
+from ._stack import AsyncExitStack, EnsureDone
+from ._tcp import TCPServer, tcp_server
+from ._testing import mock_subprocess
+from ._udp import udp_server
 
 
 def run_until_complete(coro: Awaitable, loop: AbstractEventLoop=None):

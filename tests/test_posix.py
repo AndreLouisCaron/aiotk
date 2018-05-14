@@ -4,7 +4,7 @@
 import asyncio
 import pytest
 
-from aiotk.posix import UnixSocketServer
+from aiotk import UnixSocketServer
 
 
 @pytest.mark.skipif('sys.platform == "win32"')
