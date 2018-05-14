@@ -29,4 +29,7 @@ setup(
         ],
     },
     long_description=readme,
+    install_requires = [
+        'typing-extensions>=3.6.5',
+    ],
 )

@@ -2,21 +2,28 @@
 
 
 import asyncio
-import socket
 
+from asyncio import AbstractEventLoop, Queue
 from contextlib import contextmanager
 from functools import partial
+from socket import (
+    socket,
+    AF_INET,
+    SOCK_DGRAM,
+    IPPROTO_UDP,
+)
+from typing import Callable, Iterator, Optional
 from .stack import AsyncExitStack, EnsureDone
 
 
 @contextmanager
-def udp_socket(host, port):
+def udp_socket(host: str, port: int) -> Iterator:
     """Create, bind and cleanup a UDP socket."""
 
-    s = socket.socket(
-        socket.AF_INET,
-        socket.SOCK_DGRAM,
-        socket.IPPROTO_UDP,
+    s = socket(
+        AF_INET,
+        SOCK_DGRAM,
+        IPPROTO_UDP,
     )
     try:
         s.bind((host, port))
@@ -25,25 +32,27 @@ def udp_socket(host, port):
         s.close()
 
 
-def udp_reader(socket, iqueue, size):
+def udp_reader(s: socket, iqueue: Queue, size: int) -> None:
     """Read one or more packets from an UDP socket."""
 
-    data, peer = socket.recvfrom(size)
+    data, peer = s.recvfrom(size)
     iqueue.put_nowait((peer, data))
 
 
-async def udp_writer(socket, oqueue):
+async def udp_writer(s: socket, oqueue: Queue) -> None:
     """Forward packets to the UDP socket."""
 
     while True:
         peer, data = await oqueue.get()
         try:
-            socket.sendto(data, peer)
+            s.sendto(data, peer)
         finally:
             oqueue.task_done()
 
 
-async def udp_server(host, port, service, loop=None):
+async def udp_server(host: str, port: int,
+                     service: Callable,
+                     loop: Optional[AbstractEventLoop]=None) -> None:
     """Simple UDP-based service.
 
     The only examples for UDP in asyncio documentation use protocols, the
@@ -85,12 +94,12 @@ async def udp_server(host, port, service, loop=None):
         socket = await stack.enter_context(udp_socket(host, port))
 
         # Pair of queues through which packets will travel.
-        iqueue = asyncio.Queue(loop=loop)
-        oqueue = asyncio.Queue(loop=loop)
+        iqueue = asyncio.Queue(loop=loop)  # type: Queue
+        oqueue = asyncio.Queue(loop=loop)  # type: Queue
 
         # Forward packets from the queue to the socket.
         await stack.enter_context(EnsureDone(
-            udp_writer(socket=socket, oqueue=oqueue)
+            udp_writer(socket, oqueue=oqueue)
         ))
 
         try:
@@ -103,7 +112,7 @@ async def udp_server(host, port, service, loop=None):
             await stack.enter_context(reader(
                 socket,
                 partial(
-                    udp_reader, socket=socket,
+                    udp_reader, socket,
                     iqueue=iqueue, size=2048,
                 ),
             ))

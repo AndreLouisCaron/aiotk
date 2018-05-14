@@ -3,6 +3,9 @@
 
 import asyncio
 
+from asyncio import AbstractEventLoop
+from typing import Awaitable
+
 from ._cancel import (
     cancel,
     cancel_all,
@@ -22,7 +25,7 @@ from ._pool import PoolClosed, TaskPool
 from ._sched import PeriodicTask
 
 
-def run_until_complete(coro, loop=None):
+def run_until_complete(coro: Awaitable, loop: AbstractEventLoop=None):
     """Run a task through to completion.
 
     The ``.run_until_complete()`` method on asyncio event loop objects does not

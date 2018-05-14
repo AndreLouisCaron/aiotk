@@ -4,7 +4,7 @@
 import asyncio
 
 
-def monkey_patch():
+def monkey_patch() -> None:
     """Applies all monkey patches.
 
     This is a series of backports for asyncio functions in order to use them on
@@ -15,7 +15,7 @@ def monkey_patch():
     """
 
     if not hasattr(asyncio.StreamReader, 'readuntil'):  # pragma: no cover
-        asyncio.StreamReader.readuntil = readuntil
+        asyncio.StreamReader.readuntil = readuntil  # type: ignore
 
 
 # Appears in Python 3.5.2.

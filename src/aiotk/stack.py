@@ -5,6 +5,16 @@ import asyncio
 import sys
 
 from aiotk import cancel, follow_through
+from asyncio import Task
+from typing import (
+    Any,
+    Awaitable,
+    ContextManager,
+    Optional,
+    overload,
+)
+
+from typing_extensions import AsyncContextManager
 
 
 class EnsureDone:
@@ -20,25 +30,30 @@ class EnsureDone:
 
     """
 
-    def __init__(self, coro, cancel=True, loop=None):
+    # NOTE: the type of `coro` should be `typing.Coroutine` to reject futures,
+    #       tasks and other awaitables (`loop.create_task()` does not accept
+    #       them), but there is a bug in `mypy` which causes the return type of
+    #       coroutine functions to be reported as `typing.Awaitable`.
+    def __init__(self, coro: Awaitable, cancel=True, loop=None) -> None:
         self._loop = loop or asyncio.get_event_loop()
         self._coro = coro
-        self._task = None
+        self._task = None  # type: Optional[Task]
         self._cancel = cancel
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> Task:
         """Spawn the background task."""
 
         self._task = self._loop.create_task(self._coro)
         return self._task
 
-    async def __aexit__(self, *args):
+    async def __aexit__(self, *args) -> None:
         """Wait until the task completes.
 
         If ``cancel=True`` was passed to the constructor, the task is cancelled
         before being awaited.
 
         """
+        assert self._task
         if self._cancel:
             await cancel(self._task, loop=self._loop)
         else:
@@ -61,12 +76,14 @@ class AsyncExitStack(object):
     def __init__(self):
         self._stack = []
 
+    # NOTE: cannot declare type for return value here because the class
+    #       definition is not completed...
     async def __aenter__(self):
         """No-op."""
         assert self._stack == []
         return self
 
-    async def __aexit__(self, etype, exc, tb):
+    async def __aexit__(self, etype, exc, tb) -> Optional[bool]:
         """Pop all context managers from the rollback stack.
 
         :param context: context manager or asynchronous context manager.
@@ -97,8 +114,17 @@ class AsyncExitStack(object):
             if (etype, exc, tb) == (None, None, None):
                 return True
             raise exc
+        return None
 
-    async def enter_context(self, context):
+    @overload
+    async def enter_context(self, context: ContextManager) -> Any:
+        ...  # pragma: no cover
+
+    @overload  # noqa: F811
+    async def enter_context(self, context: AsyncContextManager) -> Any:
+        ...  # pragma: no cover
+
+    async def enter_context(self, context):  # noqa: F811
         """Push an (asynchronous) context manager onto the rollback stack.
 
         :param context: context manager or asynchronous context manager.

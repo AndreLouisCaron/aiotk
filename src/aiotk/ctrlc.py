@@ -5,9 +5,12 @@ import asyncio
 import contextlib
 import signal
 
+from asyncio import Future
+from typing import Iterator
+
 
 @contextlib.contextmanager
-def handle_ctrlc(f, loop=None):
+def handle_ctrlc(f: Future, loop=None) -> Iterator[None]:
     """Context manager that schedules a callback when SIGINT is received.
 
     :param f: future to fulfill when SIGINT is received.  Will only be set

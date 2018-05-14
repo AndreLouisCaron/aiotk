@@ -5,6 +5,7 @@
 /.python-version
 /.cache/
 /.coverage
+/.mypy_cache/
 /.pytest_cache/
 /.tox/
 /src/aiotk.egg-info/
