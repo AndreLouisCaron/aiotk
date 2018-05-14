@@ -4,13 +4,15 @@
 import asyncio
 import logging
 
-from aiotk import cancel, cancel_all, EnsureDone
 from asyncio import AbstractEventLoop, Task
 from typing import (
     Callable,
     Optional,
 )
 from typing import Set  # noqa: F401
+
+from ._cancel import cancel, cancel_all
+from ._stack import EnsureDone
 
 
 class PoolClosed(Exception):

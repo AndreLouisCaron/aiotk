@@ -13,7 +13,8 @@ from socket import (
     IPPROTO_UDP,
 )
 from typing import Callable, Iterator, Optional
-from .stack import AsyncExitStack, EnsureDone
+
+from ._stack import AsyncExitStack, EnsureDone
 
 
 @contextmanager
