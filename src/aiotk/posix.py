@@ -4,6 +4,19 @@
 import asyncio
 import os
 
+from asyncio import AbstractEventLoop  # noqa: F401
+from asyncio import Future  # noqa: F401
+from asyncio import StreamReader
+from asyncio import StreamWriter
+from asyncio import Task  # noqa: F401
+from typing import Any  # noqa: F401
+from typing import Callable
+from typing import Optional
+from typing import Set  # noqa: F401
+from typing import Union  # noqa: F401
+
+from ._typing import Server  # noqa: F401
+
 
 class UnixSocketServer(object):
     """Asynchronous context manager to accept UNIX connections.
@@ -33,28 +46,32 @@ class UnixSocketServer(object):
 
     """
 
-    def __init__(self, path, callback, loop=None):
+    def __init__(self, path: str, callback: Callable,
+                 loop: Optional[AbstractEventLoop]=None) -> None:
         self._callback = callback
         self._path = path
         self._loop = loop or asyncio.get_event_loop()
-        self._sessions = set()
-        self._server = None
+        self._sessions = set()  # type: Set[Task]
+        self._boot = None  # type: Optional[Task]
+        self._server = None  # type: Optional[Server]
 
     @property
-    def path(self):
+    def path(self) -> str:
         """UNIX socket on which the server listens for incoming connections."""
         return self._path
 
+    # NOTE: cannot declare type for return value here because the class
+    #       definition is not completed...
     async def __aenter__(self):
         self.start()
         await self.wait_started()
         return self
 
-    async def __aexit__(self, *args):
+    async def __aexit__(self, *args) -> None:
         self.close()
         await self.wait_closed()
 
-    def start(self):
+    def start(self) -> None:
         """Start accepting connections.
 
         Only use this method if you are not using the server as an asynchronous
@@ -65,14 +82,14 @@ class UnixSocketServer(object):
         - :py:meth:`aiotk.TCPServer.wait_started`
         - :py:meth:`aiotk.TCPServer.close`
         """
-        if self._server:
+        if self._boot:
             raise Exception('Already running.')
-        self._server = self._loop.create_task(asyncio.start_unix_server(
-            self._client_connected, path=self._path,
+        self._boot = self._loop.create_task(asyncio.start_unix_server(
+            self._client_connected, path=self._path, loop=self._loop,
         ))
 
     # NOTE: start is synchronous, so we can't await in there.
-    async def wait_started(self):
+    async def wait_started(self) -> None:
         """Wait until the server is ready to accept connections.
 
         See:
@@ -80,13 +97,13 @@ class UnixSocketServer(object):
         - :py:meth:`aiotk.TCPServer.start`
         - :py:meth:`aiotk.TCPServer.close`
         """
-        if not self._server:
+        if not self._boot:
             raise Exception('Not started.')
-        if isinstance(self._server, asyncio.Future):
-            self._server = await self._server
+        if self._server is None:
+            self._server = await self._boot
 
     # NOTE: cancel pending sessions immediately.
-    def close(self):
+    def close(self) -> None:
         """Stop accepting connections.
 
         .. note::
@@ -102,10 +119,13 @@ class UnixSocketServer(object):
         - :py:meth:`aiotk.TCPServer.wait_closed`
 
         """
+        # NOTE: there is a natural race here and we could not manage to
+        #       reliably reach this branch while the boot task had not yet
+        #       completed.
+        if self._boot and not self._boot.done():
+            raise Exception('Starting.')  # pragma: no cover
         if not self._server:
             return
-        if isinstance(self._server, asyncio.Future):
-            raise Exception('Starting.')
         self._server.close()
         for session in self._sessions:
             session.cancel()
@@ -115,7 +135,7 @@ class UnixSocketServer(object):
     # - not clear if we can still accept connections until
     #   ```self._server.wait_closed()` completes, so we cancel again after it
     #   does.
-    async def wait_closed(self, timeout=None):
+    async def wait_closed(self, timeout: Optional[float]=None) -> None:
         """Wait until all connections are closed.
 
         See:
@@ -123,12 +143,20 @@ class UnixSocketServer(object):
         - :py:meth:`aiotk.TCPServer.wait_started`
         - :py:meth:`aiotk.TCPServer.wait_closed`
         """
+        # NOTE: there is a natural race here and we could not manage to
+        #       reliably reach this branch while the boot task had not yet
+        #       completed.
+        if self._boot and not self._boot.done():
+            raise Exception('Starting.')  # pragma: no cover
         if not self._server:
             return
         await self._server.wait_closed()
         for session in self._sessions:
             session.cancel()
-        pending = self._sessions
+        # NOTE: `mypy` does not recognize `Set[Task[Any]]` as a subtype of
+        #       `Set[Future[Any]]`.  The only way to resolve this is to create
+        #       a copy...
+        pending = {t for t in self._sessions}  # type: Set[Future[Any]]
         if pending:
             _, pending = await asyncio.wait(
                 pending,
@@ -142,7 +170,9 @@ class UnixSocketServer(object):
             os.unlink(self._path)
 
     # NOTE: not closing writer here leaks connection.
-    async def _client_wrapper(self, reader, writer):
+    async def _client_wrapper(self,
+                              reader: StreamReader,
+                              writer: StreamWriter) -> None:
         try:
             return await self._callback(
                 reader=reader, writer=writer,
@@ -153,7 +183,9 @@ class UnixSocketServer(object):
             writer.close()
 
     # NOTE: exception here leaks connection.
-    def _client_connected(self, reader, writer):
+    def _client_connected(self,
+                          reader: StreamReader,
+                          writer: StreamWriter) -> None:
         s = self._loop.create_task(
             self._client_wrapper(reader, writer)
         )

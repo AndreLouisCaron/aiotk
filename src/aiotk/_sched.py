@@ -5,6 +5,9 @@ import asyncio
 import logging
 
 from aiotk import cancel
+from asyncio import AbstractEventLoop
+from asyncio import Task  # noqa: F401
+from typing import Callable, Optional
 
 
 class PeriodicTask:
@@ -22,24 +25,29 @@ class PeriodicTask:
 
     """
 
-    def __init__(self, func, interval, loop=None):
+    def __init__(self, func: Callable,
+                 interval: float,
+                 loop: Optional[AbstractEventLoop]=None) -> None:
         self._loop = loop or asyncio.get_event_loop()
         self._func = func
         self._ival = interval
-        self._task = None
+        self._task = None  # type: Optional[Task]
 
+    # NOTE: cannot declare type for return value here because the class
+    #       definition is not completed...
     async def __aenter__(self):
         """Schedule the background task."""
         assert self._task is None
         self._task = self._loop.create_task(self._run())
         return self
 
-    async def __aexit__(self, *args):
+    async def __aexit__(self, *args) -> None:
         """Stop the background task and wait for it to complete."""
+        assert self._task
         await cancel(self._task)
         self._task = None
 
-    async def _run(self):
+    async def _run(self) -> None:
         """Periodically run the task and wait until the schedule."""
         while True:
             try:

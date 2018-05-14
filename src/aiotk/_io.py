@@ -3,11 +3,14 @@
 
 import asyncio
 
+from asyncio import AbstractEventLoop
 from contextlib import contextmanager
+from typing import Callable, Iterator, Optional
 
 
 @contextmanager
-def reader(fd, callback, loop=None):
+def reader(fd, callback: Callable,
+           loop: Optional[AbstractEventLoop]=None) -> Iterator[None]:
     """Register a low-level reader for a file descriptor.
 
     **Note**: the proactor event loop does not support readers.

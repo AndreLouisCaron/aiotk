@@ -5,6 +5,12 @@ import asyncio
 import logging
 
 from aiotk import cancel, cancel_all, EnsureDone
+from asyncio import AbstractEventLoop, Task
+from typing import (
+    Callable,
+    Optional,
+)
+from typing import Set  # noqa: F401
 
 
 class PoolClosed(Exception):
@@ -22,17 +28,17 @@ class TaskPool:
 
     """
 
-    def __init__(self, loop=None):
+    def __init__(self, loop: Optional[AbstractEventLoop]=None) -> None:
         self._loop = loop or asyncio.get_event_loop()
         self._lock = asyncio.Lock(loop=self._loop)
         self._cond = asyncio.Condition(self._lock, loop=self._loop)
-        self._pool = set()
+        self._pool = set()  # type: Set
         self._task = None
         self._done = False
         self._idle = asyncio.Condition(self._lock, loop=self._loop)
         self._busy = asyncio.Condition(self._lock, loop=self._loop)
 
-    async def spawn(self, fn, *args, **kwds):
+    async def spawn(self, fn: Callable, *args, **kwds) -> Task:
         """Add a new task to collect.
 
         The pool is designed to keep memory usage as low as possible by

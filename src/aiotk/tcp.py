@@ -3,8 +3,24 @@
 
 import asyncio
 
+from asyncio import Future  # noqa: F401
+from asyncio import StreamReader
+from asyncio import StreamWriter
+from asyncio import Task  # noqa: F401
+from typing import Any  # noqa: F401
+from typing import Callable
+from typing import Optional
+from typing import Set  # noqa: F401
 
-async def tcp_server(**kwds):
+from ._cancel import wait_until_cancelled
+from ._typing import SocketServer
+
+
+def _effective_bind_port(server: SocketServer) -> int:
+    return server.sockets[0].getsockname()[1]
+
+
+async def tcp_server(**kwds)-> None:
     """Run a TCP server in the foreground.
 
     **Note**: this function is a coroutine.
@@ -29,7 +45,7 @@ async def tcp_server(**kwds):
 
     server = await loop.create_server(**kwds)
     try:
-        await asyncio.Future(loop=loop)
+        await wait_until_cancelled(loop=loop)
     finally:
         server.close()
         await server.wait_closed()
@@ -65,16 +81,18 @@ class TCPServer(object):
 
     """
 
-    def __init__(self, host, port, callback, loop=None):
+    def __init__(self, host: str, port: int,
+                 callback: Callable, loop=None) -> None:
         self._callback = callback
         self._host = host
         self._port = port
         self._loop = loop or asyncio.get_event_loop()
-        self._sessions = set()
-        self._server = None
+        self._sessions = set()  # type: Set[Task]
+        self._boot = None  # type: Optional[Task]
+        self._server = None  # type: Optional[SocketServer]
 
     @property
-    def host(self):
+    def host(self) -> str:
         """Network interface on which the server listens for connections.
 
         See:
@@ -84,7 +102,7 @@ class TCPServer(object):
         return self._host
 
     @property
-    def port(self):
+    def port(self) -> int:
         """Port number on which the server listens for connections.
 
         See:
@@ -99,16 +117,21 @@ class TCPServer(object):
         """
         return self._port
 
+    # NOTE: cannot declare type for return value here because the class
+    #       definition is not completed...
     async def __aenter__(self):
         self.start()
         await self.wait_started()
         return self
 
-    async def __aexit__(self, *args):
+    async def __aexit__(self, *args) -> Optional[bool]:
         self.close()
         await self.wait_closed()
+        # NOTE: `mypy` will not allow `return` without an expression even when
+        #       it accepts `None`...
+        return None
 
-    def start(self):
+    def start(self) -> None:
         """Start accepting connections.
 
         Only use this method if you are not using the server as an asynchronous
@@ -119,14 +142,14 @@ class TCPServer(object):
         - :py:meth:`aiotk.TCPServer.wait_started`
         - :py:meth:`aiotk.TCPServer.close`
         """
-        if self._server:
+        if self._boot:
             raise Exception('Already running.')
-        self._server = self._loop.create_task(asyncio.start_server(
+        self._boot = self._loop.create_task(asyncio.start_server(
             self._client_connected, host=self._host, port=self._port,
         ))
 
     # NOTE: start is synchronous, so we can't await in there.
-    async def wait_started(self):
+    async def wait_started(self) -> None:
         """Wait until the server is ready to accept connections.
 
         See:
@@ -134,16 +157,17 @@ class TCPServer(object):
         - :py:meth:`aiotk.TCPServer.start`
         - :py:meth:`aiotk.TCPServer.close`
         """
-        if not self._server:
+        if not self._boot:
             raise Exception('Not started.')
-        if isinstance(self._server, asyncio.Future):
-            self._server = await self._server
-            self._port = self._server.sockets[0].getsockname()[1]
+        if self._server is None:
+            self._server = await self._boot
+            assert self._server is not None
+            self._port = _effective_bind_port(self._server)
 
     # NOTE: cancel pending sessions immediately.
     #
     # TODO: make cancelling session optionnal (graceful shutdown).
-    def close(self):
+    def close(self) -> None:
         """Stop accepting connections.
 
         .. note::
@@ -159,10 +183,10 @@ class TCPServer(object):
         - :py:meth:`aiotk.TCPServer.wait_closed`
 
         """
+        if self._boot and not self._boot.done():
+            raise Exception('Starting.')
         if not self._server:
             return
-        if isinstance(self._server, asyncio.Future):
-            raise Exception('Starting.')
         self._server.close()
         for session in self._sessions:
             session.cancel()
@@ -172,7 +196,7 @@ class TCPServer(object):
     # - not clear if we can still accept connections until
     #   ```self._server.wait_closed()` completes, so we cancel again after it
     #   does.
-    async def wait_closed(self, timeout=None):
+    async def wait_closed(self, timeout=None) -> None:
         """Wait until all connections are closed.
 
         See:
@@ -186,7 +210,7 @@ class TCPServer(object):
         await self._server.wait_closed()
         for session in self._sessions:
             session.cancel()
-        pending = self._sessions
+        pending = {t for t in self._sessions}  # type: Set[Future[Any]]
         if pending:
             _, pending = await asyncio.wait(
                 pending,
@@ -198,7 +222,9 @@ class TCPServer(object):
         assert not self._sessions
 
     # NOTE: not closing writer here leaks connection.
-    async def _client_wrapper(self, reader, writer):
+    async def _client_wrapper(self,
+                              reader: StreamReader,
+                              writer: StreamWriter) -> None:
         try:
             return await self._callback(
                 reader=reader, writer=writer,
@@ -209,7 +235,9 @@ class TCPServer(object):
             writer.close()
 
     # NOTE: exception here leaks connection.
-    def _client_connected(self, reader, writer):
+    def _client_connected(self,
+                          reader: StreamReader,
+                          writer: StreamWriter):
         s = self._loop.create_task(
             self._client_wrapper(reader, writer)
         )

@@ -3,8 +3,13 @@
 
 import asyncio
 
+from asyncio import AbstractEventLoop, Task
+from typing import Any, Optional, Set
 
-async def wait_until_cancelled(*, propagate=True, loop=None):
+
+async def wait_until_cancelled(*,
+                               propagate: bool=True,
+                               loop: Optional[AbstractEventLoop]=None) -> None:
     """Wait until the calling task is canceled.
 
     **Note**: this function is a coroutine.
@@ -42,7 +47,7 @@ async def wait_until_cancelled(*, propagate=True, loop=None):
             pass
 
 
-async def cancel(task, loop=None):
+async def cancel(task: Task, loop: Optional[AbstractEventLoop]=None) -> None:
     """Cancel a task and wait until it's done.
 
     **Note**: this function is a coroutine.
@@ -95,7 +100,8 @@ async def cancel(task, loop=None):
         raise
 
 
-async def cancel_all(tasks, loop=None):
+async def cancel_all(tasks: Set[Task],
+                     loop: Optional[AbstractEventLoop]=None) -> None:
     """Cancel a set of tasks and wait until they're done.
 
     **Note**: this function is a coroutine.
@@ -150,7 +156,8 @@ async def cancel_all(tasks, loop=None):
         raise
 
 
-async def follow_through(task, loop=None):
+async def follow_through(task: Task,
+                         loop: Optional[AbstractEventLoop]=None) -> Any:
     """Wait for a task to complete (even if canceled while waiting).
 
     **Note**: this function is a coroutine.
