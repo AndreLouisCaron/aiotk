@@ -34,6 +34,8 @@ def test_run_until_complete_failure(event_loop):
 def test_run_until_complete_interrupted(event_loop):
     """Task is cancelled on ``KeyboardInterrupt`` exception."""
 
+    # This issues a warning because it's never awaited, but it's not clear how
+    # to handle that or silence it...
     async def main():
         raise Exception('Should not have been called!')
 
@@ -57,6 +59,8 @@ def test_run_until_complete_interrupted(event_loop):
 def test_run_until_complete_interrupted_override(event_loop):
     """Task finishes despite ``KeyboardInterrupt`` exception."""
 
+    # This issues a warning because it's never awaited, but it's not clear how
+    # to handle that or silence it...
     async def main():
         raise Exception('Should not have been called!')
 
