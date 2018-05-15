@@ -34,6 +34,8 @@ async def wait_until_cancelled(*,
     :param loop: Loop in which the coroutine will block.  Defaults to the
      current event loop.
 
+    .. versionadded:: 0.3
+
     """
 
     loop = loop or asyncio.get_event_loop()
@@ -86,7 +88,7 @@ async def cancel(task: Task, loop: Optional[AbstractEventLoop]=None) -> None:
     :param loop: The event loop to use for awaiting.  Defaults to the current
      event loop.
 
-    .. versionadded: 0.3
+    .. versionadded:: 0.3
 
     """
 
@@ -141,7 +143,7 @@ async def cancel_all(tasks: Set[Task],
     :param loop: The event loop to use for awaiting.  Defaults to the current
      event loop.
 
-    .. versionadded: 0.3
+    .. versionadded:: 0.3
 
     """
 
@@ -184,7 +186,7 @@ async def follow_through(task: Task,
     :param loop: The event loop to use for awaiting.  Defaults to the current
      event loop.
 
-    .. versionadded: 0.3
+    .. versionadded:: 0.3
 
     """
 

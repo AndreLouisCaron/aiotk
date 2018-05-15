@@ -37,7 +37,7 @@ async def tcp_server(**kwds)-> None:
       that are based on protocols (asyncio's callback API)
     - runs in the foreground
 
-    .. versionadded: 0.3
+    .. versionadded:: 0.3
 
     """
 
@@ -77,7 +77,7 @@ class TCPServer(object):
     :param loop: Event loop in which to run the server's asynchronous tasks.
      When ``None``, the current default event loop will be used.
 
-    .. versionadded: 0.2
+    .. versionadded:: 0.2
 
     """
 

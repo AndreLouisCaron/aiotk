@@ -42,7 +42,7 @@ class UnixSocketServer(object):
     :param loop: Event loop in which to run the server's asynchronous tasks.
      When ``None``, the current default event loop will be used.
 
-    .. versionadded: 0.1
+    .. versionadded:: 0.1
 
     """
 

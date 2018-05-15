@@ -27,7 +27,7 @@ def reader(fd, callback: Callable,
 
     This context manager yields nothing.
 
-    .. versionadded: 0.4
+    .. versionadded:: 0.4
 
     """
 

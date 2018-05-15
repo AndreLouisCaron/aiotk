@@ -21,7 +21,7 @@ class PeriodicTask:
        async with PeriodicTask(my_task, 30.0):
            # do something for a long time.
 
-    .. versionadded: 0.5
+    .. versionadded:: 0.5
 
     """
 

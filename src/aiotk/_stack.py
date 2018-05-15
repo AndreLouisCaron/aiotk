@@ -26,7 +26,7 @@ class EnsureDone:
 
     .. source-code: python
 
-    .. versionadded: 0.3
+    .. versionadded:: 0.3
 
     """
 
@@ -69,7 +69,7 @@ class AsyncExitStack(object):
     - supports asynchronous context managers (in addition to regular context
       managers).
 
-    .. versionadded: 0.2
+    .. versionadded:: 0.2
 
     """
 

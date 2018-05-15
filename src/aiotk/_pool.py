@@ -28,6 +28,8 @@ class TaskPool:
     graceful shutdown (with cancellation) to clean up when shutting down the
     server.
 
+    .. versionadded:: 0.3
+
     """
 
     def __init__(self, loop: Optional[AbstractEventLoop]=None) -> None:
