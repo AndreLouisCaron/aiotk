@@ -255,7 +255,7 @@ def mock_subprocess(run: Callable,
     - ``kwds``: extra keyword arguments passed to
       ``asyncio.create_subprocess_exec()``.
 
-    .. versionadded: 0.1
+    .. versionadded:: 0.1
 
     """
 

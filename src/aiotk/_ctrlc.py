@@ -17,6 +17,8 @@ def handle_ctrlc(f: Future, loop=None) -> Iterator[None]:
      once even if SIGINT is received multiple times.
     :param loop: event loop (defaults to global event loop).
 
+    .. versionadded:: 0.2
+
     """
 
     loop = loop or asyncio.get_event_loop()

@@ -10,7 +10,7 @@ def monkey_patch() -> None:
     This is a series of backports for asyncio functions in order to use them on
     all Python 3.5+ versions.
 
-    .. versionadded: 0.1
+    .. versionadded:: 0.1
 
     """
 
@@ -39,7 +39,8 @@ async def readuntil(self, separator=b'\n'):  # pragma: no cover
     LimitOverrunError exception  will be raised, and the data
     will be left in the internal buffer, so it can be read again.
 
-    .. versionadded: 0.1
+    .. versionadded:: 0.1
+
     """
     seplen = len(separator)
     if seplen == 0:

@@ -22,7 +22,7 @@ from ._sched import PeriodicTask
 from ._stack import AsyncExitStack, EnsureDone
 from ._tcp import TCPServer, tcp_server
 from ._testing import mock_subprocess
-from ._udp import udp_server
+from ._udp import udp_server, udp_socket
 
 
 def run_until_complete(coro: Awaitable, loop: AbstractEventLoop=None):
@@ -39,8 +39,8 @@ def run_until_complete(coro: Awaitable, loop: AbstractEventLoop=None):
     through to completion.  When the ``KeyboardInterrupt`` exception is caught,
     the task is canceled and resumed to give it a chance to clean up properly.
 
-    .. versionadded: 0.4
-    .. versionchanged: 0.5 Can now be called with a ``asyncio.Task`` argument.
+    .. versionadded:: 0.4
+    .. versionchanged:: 0.5 Can now be called with a ``asyncio.Task`` argument.
 
     """
 
@@ -78,6 +78,7 @@ __all__ = [
     'TCPServer',
     'tcp_server',
     'udp_server',
+    'udp_socket',
     'UnixSocketServer',
     'wait_until_cancelled',
 ]

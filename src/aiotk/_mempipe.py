@@ -43,6 +43,7 @@ def mempipe(loop: Optional[AbstractEventLoop]=None,
     """In-memory pipe, returns a ``(reader, writer)`` pair.
 
     .. versionadded:: 0.1
+
     """
 
     loop = loop or asyncio.get_event_loop()

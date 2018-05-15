@@ -18,8 +18,12 @@ from ._stack import AsyncExitStack, EnsureDone
 
 
 @contextmanager
-def udp_socket(host: str, port: int) -> Iterator:
-    """Create, bind and cleanup a UDP socket."""
+def udp_socket(host: str, port: int) -> Iterator[socket]:
+    """Create, bind and cleanup a UDP socket.
+
+    .. versionadded:: 0.4
+
+    """
 
     s = socket(
         AF_INET,
@@ -80,7 +84,7 @@ async def udp_server(host: str, port: int,
     The ``iqueue`` and ``oqueue`` parameters are ``asyncio.Queue`` objects that
     the coroutine can use to read from and write to, respectively.
 
-    .. versionadded: 0.4
+    .. versionadded:: 0.4
 
     """
 

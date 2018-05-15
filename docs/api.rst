@@ -100,6 +100,18 @@ Graceful shutdown
 Streams
 -------
 
+.. autofunction:: aiotk.udp_socket
+
+   .. testcode::
+
+      from aiotk import udp_socket
+
+      async def demo():
+          with udp_socket('127.0.0.1', 0) as socket:
+              pass
+
+      asyncio.get_event_loop().run_until_complete(demo())
+
 .. autofunction:: aiotk.udp_server
 
    .. testcode::
