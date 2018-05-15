@@ -11,15 +11,12 @@ addons:
 language: python
 
 python:
+  - "3.6"
   - "3.5"
-
-env:
-  - TOXENV=docs
-  - TOXENV=py35
 
 install:
   - pip install tox
-  - pip install coveralls
+  - pip install tox-travis
 script:
   - tox
 deploy:
@@ -39,4 +36,4 @@ deploy:
       zLiQA7kQQ69CyjvTSbDPZ3iMy178XmNOzBPrsJV5aRCyumSjKl8TNHM53hTVNM=
   on:
     tags: true
-    condition: $TOXENV = py35
+    condition: $TRAVIS_PYTHON_VERSION = "3.6"
