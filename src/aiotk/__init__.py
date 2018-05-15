@@ -40,11 +40,15 @@ def run_until_complete(coro: Awaitable, loop: AbstractEventLoop=None):
     the task is canceled and resumed to give it a chance to clean up properly.
 
     .. versionadded: 0.4
+    .. versionchanged: 0.5 Can now be called with a ``asyncio.Task`` argument.
 
     """
 
     loop = loop or asyncio.get_event_loop()
-    task = loop.create_task(coro)
+    if isinstance(coro, asyncio.Task):
+        task = coro
+    else:
+        task = loop.create_task(coro)
     try:
         loop.run_until_complete(task)
     except KeyboardInterrupt:

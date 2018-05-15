@@ -4,6 +4,9 @@
   Change log
 ##############
 
+* :feature:`-` Added support for calling :py:func:`aiotk.run_until_complete` to
+  allow with pre-created `asyncio.Task` objects.
+
 * :release:`0.2.0 <2016-09-15>`
 * :feature:`-` Adds :py:func:`aiotk.handle_ctrlc`.
 * :feature:`-` Adds :py:class:`aiotk.TCPServer`.
