@@ -39,3 +39,4 @@ deploy:
       zLiQA7kQQ69CyjvTSbDPZ3iMy178XmNOzBPrsJV5aRCyumSjKl8TNHM53hTVNM=
   on:
     tags: true
+    condition: $TOXENV = py35
