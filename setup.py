@@ -26,6 +26,7 @@ setup(
         'aiotk': [
         ],
     },
+    description='aiotk: asyncio toolkit',
     long_description=readme,
     install_requires = [
         'typing-extensions>=3.6.5',

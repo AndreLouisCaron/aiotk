@@ -14,13 +14,13 @@ to others.
 Resources
 =========
 
-- Documentation: rtd_
-- Official releases: pypi_
-- Source code: github_
+- Documentation: `aiotk on ReadTheDocs`_
+- Official releases: `aiotk on PyPI`_
+- Source code: `aiotk on GitHub`_
 
-.. _rtd: http://aiotk.readthedocs.io/en/latest/
-.. _pypi: https://pypi.org/project/aiotk/
-.. _github: https://github.com/AndreLouisCaron/aiotk
+.. _`aiotk on ReadTheDocs`: http://aiotk.readthedocs.io/en/latest/
+.. _`aiotk on PyPI`: https://pypi.org/project/aiotk/
+.. _`aiotk on GitHub`: https://github.com/AndreLouisCaron/aiotk
 
 Contributing
 ============
