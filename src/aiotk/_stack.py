@@ -118,11 +118,11 @@ class AsyncExitStack(object):
 
     @overload
     async def enter_context(self, context: ContextManager) -> Any:
-        ...  # pragma: no cover
+        ...
 
     @overload  # noqa: F811
     async def enter_context(self, context: AsyncContextManager) -> Any:
-        ...  # pragma: no cover
+        ...
 
     async def enter_context(self, context):  # noqa: F811
         """Push an (asynchronous) context manager onto the rollback stack.
