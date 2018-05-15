@@ -4,6 +4,8 @@
   Change log
 ##############
 
+* :feature:`-` Adds continuous integration for Python 3.6.
+
 * :release:`0.5.0 <2018-05-14>`
 * :feature:`-` Adds support for calling :py:func:`aiotk.run_until_complete` to
   allow with pre-created `asyncio.Task` objects.
