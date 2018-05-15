@@ -86,6 +86,9 @@ async def udp_server(host: str, port: int,
 
     .. versionadded:: 0.4
 
+    .. versionchanged:: 0.5 Added the ability to bind on a dynamically chosen
+       port.
+
     """
 
     # Circular imports (yuk, fixme)!

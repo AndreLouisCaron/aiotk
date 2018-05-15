@@ -16,7 +16,7 @@ setup(
     name='aiotk',
     maintainer='Andre Caron',
     maintainer_email='andre.l.caron@gmail.com',
-    version='0.4.0',
+    version='0.5.0',
     url='https://github.com/AndreLouisCaron/aiotk',
     packages=find_packages(where='src'),
     package_dir={
