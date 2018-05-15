@@ -22,6 +22,20 @@ install:
   - pip install coveralls
 script:
   - tox
-
-after_success:
-  - coveralls
+deploy:
+  provider: pypi
+  user: andre.l.caron
+  password:
+    secure: >-
+      WGXFLuUg82lTKZJGxpA5bCwXXwtRDIS/6t0g+bcdzo26kq6fDD6C1SZwFhDnMZoUwz4Fc
+      /Cw1itp9LQP+WLdLX19+Z8IYX+Hg+Yl352Q5ahhUTFldvUpwccWPLnMDfAuNLuAPm9Dt0
+      NS41TkR7UfhPJBXRDyrgvCsyyJbD8FU0LvcqwXMghWbeWLTx/QheG3MY+QfcpQ0dO6aun
+      xeh3iC+YW2OFH99S9316FRTO+c+kHb81Qj106coOC/9CLbOn73xVDtaJUBRI8iTnCipGO
+      jRCS1gysLcjA+F32xrvYixLjhaZ1T7lJsGGsuOZox+x/erdMJ+FCs6D9IuVtwq+cc7xZo
+      PIYmMMDshlwXnt8ITinq6v8QSlk5ydb/2YozIbCOdeAdgMOA9bcoQhRmdXGZ4HR/DKTZr
+      RMrNU48TXD1aNqx9x7xkZnxFELDFkVhYNde6dIkjD+g7yhd2OVLBPXccfX6M32Kma62yn
+      GAKBSnhXo7iyKZ6S32KH08EhfF1HWwKVV4jaGThNFCVzZWVNAPASAirmth8o4Qy1hSmvE
+      raikXwxYp1gcMaHHSB5r/+JMn20ZXqNNkz8pb13QHQKHmXRr2p7FZ6XT0m1u44e36A0DO
+      zLiQA7kQQ69CyjvTSbDPZ3iMy178XmNOzBPrsJV5aRCyumSjKl8TNHM53hTVNM=
+  on:
+    tags: true
