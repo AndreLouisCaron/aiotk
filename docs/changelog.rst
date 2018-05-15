@@ -4,8 +4,17 @@
   Change log
 ##############
 
-* :feature:`-` Added support for calling :py:func:`aiotk.run_until_complete` to
+* :release:`0.5.0 <2018-05-14>`
+* :feature:`-` Adds support for calling :py:func:`aiotk.run_until_complete` to
   allow with pre-created `asyncio.Task` objects.
+* :feature:`-` Adds :py:class:`aiotk.PeriodicTask`.
+* :feature:`-` Adds static type annotations.
+* :feature:`-` Adds ability to run tests on Windows (no continuous integration
+  on Windows yet).
+* :feature:`-` Adds various process improvements: continuous delivery pipeline,
+  static type checking, reproducible builds, test & documentation library
+  updates, working linter configuration, new "Resources" section at the top of
+  the REAMDE and the documentation.
 
 * :release:`0.4.0 <2017-03-14>`
 * :feature:`-` Adds :py:func:`aiotk.reader`.
