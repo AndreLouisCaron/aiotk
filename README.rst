@@ -1,8 +1,8 @@
 .. -*- coding: utf-8 -*-
 
-############################
-  aiotk -- asyncio toolkit
-############################
+============================
+  `aiotk`: asyncio toolkit
+============================
 
 Purpose
 =======
@@ -11,10 +11,21 @@ This is a collection of asyncio-related utilities that I have found useful,
 that I've used in at least two projects and that seem like they might be useful
 to others.
 
+Resources
+=========
+
+- Documentation: rtd_
+- Official releases: pypi_
+- Source code: github_
+
+.. _rtd: http://aiotk.readthedocs.io/en/latest/
+.. _pypi: https://pypi.org/project/aiotk/
+.. _github: https://github.com/AndreLouisCaron/aiotk
+
 Contributing
 ============
 
-We welcome pull requests!
+Nobody is paid to maintain this software, but we welcome pull requests!
 
 License
 =======
