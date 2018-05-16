@@ -2,6 +2,7 @@
 
 
 import asyncio
+import sys
 
 from asyncio import AbstractEventLoop
 from typing import Awaitable
@@ -12,17 +13,21 @@ from ._cancel import (
     follow_through,
     wait_until_cancelled,
 )
-from ._ctrlc import handle_ctrlc
 from ._io import reader
 from ._mempipe import mempipe
 from ._monkey import monkey_patch
 from ._pool import PoolClosed, TaskPool
-from ._posix import UnixSocketServer
 from ._sched import PeriodicTask
 from ._stack import AsyncExitStack, EnsureDone
 from ._tcp import TCPServer, tcp_server
 from ._testing import mock_subprocess
 from ._udp import udp_server, udp_socket
+
+if sys.platform != 'win32':  # pragma: no cover
+    from ._posix import (
+        handle_ctrlc,
+        UnixSocketServer,
+    )
 
 
 def run_until_complete(coro: Awaitable, loop: AbstractEventLoop=None):

@@ -3,19 +3,47 @@
 
 import asyncio
 import os
+import contextlib
+import signal
 
 from asyncio import AbstractEventLoop  # noqa: F401
-from asyncio import Future  # noqa: F401
+from asyncio import Future
 from asyncio import StreamReader
 from asyncio import StreamWriter
 from asyncio import Task  # noqa: F401
 from typing import Any  # noqa: F401
 from typing import Callable
+from typing import Iterator
 from typing import Optional
 from typing import Set  # noqa: F401
 from typing import Union  # noqa: F401
 
 from ._typing import Server  # noqa: F401
+
+
+@contextlib.contextmanager
+def handle_ctrlc(f: Future, loop=None) -> Iterator[None]:
+    """Context manager that schedules a callback when SIGINT is received.
+
+    :param f: future to fulfill when SIGINT is received.  Will only be set
+     once even if SIGINT is received multiple times.
+    :param loop: event loop (defaults to global event loop).
+
+    .. versionadded:: 0.2
+
+    """
+
+    loop = loop or asyncio.get_event_loop()
+
+    def handler():
+        if not f.done():
+            f.set_result(None)
+
+    loop.add_signal_handler(signal.SIGINT, handler)
+    try:
+        yield
+    finally:
+        loop.remove_signal_handler(signal.SIGINT)
 
 
 class UnixSocketServer(object):

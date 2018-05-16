@@ -22,6 +22,25 @@ Resources
 .. _`aiotk on PyPI`: https://pypi.org/project/aiotk/
 .. _`aiotk on GitHub`: https://github.com/AndreLouisCaron/aiotk
 
+Development
+===========
+
+POSIX systems
+-------------
+
+Run the tests like so::
+
+  $ export COVERAGE_EXCLUDE=win32
+  $ tox ...
+
+Windows
+-------
+
+Run the tests like so::
+
+  $ set COVERAGE_EXCLUDE=posix
+  $ tox ...
+
 Contributing
 ============
 
