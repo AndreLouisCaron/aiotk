@@ -84,7 +84,8 @@ class UnixSocketServer(object):
         """
         if self._boot:
             raise Exception('Already running.')
-        self._boot = self._loop.create_task(asyncio.start_unix_server(
+        start_unix_server = asyncio.start_unix_server  # type: ignore
+        self._boot = self._loop.create_task(start_unix_server(
             self._client_connected, path=self._path, loop=self._loop,
         ))
 
