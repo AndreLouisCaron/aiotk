@@ -4,6 +4,7 @@
   Change log
 ##############
 
+* :feature:`-` Adds continuous integration on Windows.
 * :feature:`-` Adds continuous integration for Python 3.6.
 
 * :release:`0.5.0 <2018-05-14>`

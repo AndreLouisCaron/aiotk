@@ -1,0 +1,21 @@
+# -*- coding: utf-8 -*-
+
+# Skip build on short-lived/feature branches; let pull requests trigger builds.
+skip_branch_with_pr: true
+
+environment:
+  COVERAGE_EXCLUDE: posix
+  matrix:
+    - PYTHON: C:\Python36-x64
+      PYTHON_VERSION: '3.6'
+      PYTHON_ARCH: '64'
+      TOXPYTHON: C:\Python36-x64\python.exe
+      TOXENV: 'py36'
+    # NOTE: AppVeyor offers Python 3.5.3 and it seems like
+    #       `typing.ContextManager` was not present in that version.
+
+install:
+  - "pip install tox"
+build: off
+test_script:
+  - "tox"
