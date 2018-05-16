@@ -11,11 +11,8 @@ environment:
       PYTHON_ARCH: '64'
       TOXPYTHON: C:\Python36-x64\python.exe
       TOXENV: 'py36'
-    - PYTHON: C:\Python35-x64
-      PYTHON_VERSION: '3.5'
-      PYTHON_ARCH: '64'
-      TOXPYTHON: C:\Python35-x64\python.exe
-      TOXENV: 'py35'
+    # NOTE: AppVeyor offers Python 3.5.3 and it seems like
+    #       `typing.ContextManager` was not present in that version.
 
 install:
   - "pip install tox"
