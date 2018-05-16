@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+# Skip build on short-lived/feature branches; let pull requests trigger builds.
+branches:
+  only:
+  - master
+
 sudo: false
 
 # sphinxcontrib-spelling requires libenchant.
