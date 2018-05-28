@@ -9,10 +9,10 @@ class Server(Protocol):
     """Asyncio event loop does not publish an interface for server objects."""
 
     def close(self) -> None:
-        ...  # pragma: no cover
+        ...
 
     async def wait_closed(self) -> None:
-        ...  # pragma: no cover
+        ...
 
 
 class SocketServer(Server):
@@ -20,4 +20,4 @@ class SocketServer(Server):
 
     @property
     def sockets(self) -> List[Any]:
-        ...  # pragma: no cover
+        ...
